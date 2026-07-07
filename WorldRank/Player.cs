@@ -2,16 +2,16 @@
 
 interface IPlayer
 {
-    int Id { get; }
+    Guid Id { get; }
     string Name { get; set; }
     int Score { get; set; }
 }
 
-public class Player
+public class Player : IPlayer
 {
     public Guid Id { get; }
-    public string Name { get; }
-    public int Score { get; private set; }
+    public string Name { get; set; }
+    public int Score { get;  set; }
 
     public Player(string name)
     {
