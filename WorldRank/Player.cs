@@ -1,5 +1,11 @@
 ﻿namespace WorldRank;
 
+interface IWalletRepository
+{
+    void AddWallet(Wallet wallet,int playerId);
+    List<Wallet> GetByPlayer(int playerId);
+
+}
 interface IPlayer
 {
     Guid Id { get; }
