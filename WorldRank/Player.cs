@@ -14,8 +14,9 @@ public class Player : IPlayer
     public string Name { get; set; }
     public int Score { get;  set; }
 
-    public Dictionary<Currency,Wallet> _wallet { get; set; }
+    public Dictionary<Currency,Wallet> _wallet { get; set; } = new Dictionary<Currency,Wallet>();
     public Player(int id , string name) {
+        
        Name = name;
         Id = id;
     }

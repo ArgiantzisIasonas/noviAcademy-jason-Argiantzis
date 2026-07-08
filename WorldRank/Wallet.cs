@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using WorldRank.CustomException;
 
 namespace WorldRank
 {
     public class Wallet
     {
-        public decimal Balance { get; private set; }
+        public decimal Balance { get;  set; }
         public Currency Currency { get;   set; }
-        public bool IsBlocked { get;  set; }
+        public bool IsBlocked { get; }
 
         public Wallet(decimal initialBalance, Currency currency_const,bool isBlocked)
         {
-            if (initialBalance < 0)
-                throw new ArgumentOutOfRangeException(nameof(initialBalance), "Initial balance must be non-negative.");
+          
+           new InsufficientFundException(initialBalance);
             Balance = initialBalance;
             Currency = currency_const;
             IsBlocked = false;

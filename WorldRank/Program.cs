@@ -1,10 +1,15 @@
 ﻿using WorldRank;
 using System.Linq;
 
+
 var players = new List<Player>();
 int nextId = 0;
+
+
+
 IWalletRepository walletRepository = new InMemoryWalletRepository(players);
 IPlayerRepository playerRepository = new InMemoryPlayerRepository(players);
+
 while (true)
 {
     Console.WriteLine("\n=== WorldRank Player Registry ===");
@@ -58,7 +63,8 @@ void AddPlayer()
         return;
     }
 
-    var player = new Player(nextId++, name);
+    var player = new Player(nextId, name);
+    nextId++;
     player.UpdateScore(score);
     playerRepository.AddPlayer(player);
     Console.WriteLine("Player added successfully.");
@@ -181,10 +187,14 @@ void AddWalletToPlayer()
             Currency.AUD;
             break;
     }
+    Console.Write("Give Balabce: ");
+    var balance = Console.ReadLine();
 
     int.TryParse(id, out var playerId);
+
+    int.TryParse(balance, out var money);
     {
-        walletRepository.AddWallet(new Wallet(10, cur, false), playerId);
+        walletRepository.AddWallet(new Wallet(money, cur, false), playerId);
     }
 }
 
@@ -199,7 +209,7 @@ void GetWalletOfPlayer()
 
         foreach (var wallet in wallets)
         {
-            Console.WriteLine($"Wallet Number {wallets.IndexOf(wallet)} {wallet.ToString()}");
+            Console.WriteLine($"Wallet Number {wallets.IndexOf(wallet)} and  {wallet.ToString()}");
         }
     }
     else
