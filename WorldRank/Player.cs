@@ -1,18 +1,33 @@
 ﻿namespace WorldRank;
 
-public class Player
-{
-    public Guid Id { get; }
-    public string Name { get; }
-    public int Score { get; private set; }
 
-    public Player(string name)
+interface IPlayer
+{
+    int Id { get; set; }
+    string Name { get; set; }
+    int Score { get; set; }
+}
+
+public class Player : IPlayer
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Score { get;  set; }
+
+    public Dictionary<Currency,Wallet> _wallet { get; set; }
+    public Player(int id , string name) {
+       Name = name;
+        Id = id;
+    }
+    public Player(int id ,string name , Dictionary<Currency, Wallet> wallet)
     {
         if (string.IsNullOrEmpty(name))
             throw new ArgumentException("Name cannot be null or empty.", nameof(name));
 
-        Id = Guid.NewGuid();
+        Id = id;
         Name = name;
+        _wallet = wallet;
+
     }
 
     public void UpdateScore(int newScore)
