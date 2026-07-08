@@ -32,7 +32,7 @@ namespace WorldRank
                 _players.Remove(player);
             }
         }
-        void GroupPlayersByScore(int score)
+       public  void GroupPlayersByScore(int score)
         {
             var v = _players.GroupBy(item => score);
 
@@ -47,9 +47,5 @@ namespace WorldRank
             }
         }
 
-        void IPlayerRepository.GroupPlayersByScore(int score)
-        {
-            GroupPlayersByScore(score);
-        }
     }
 }
