@@ -1,9 +1,13 @@
+using Application.Repositories;
+using Domain.Entity;
 using Domain.Enums;
 using Domain.Exceptions;
+using Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
 using NLog;
-using WorldRank.Console;
 
 var logger = LogManager.GetCurrentClassLogger();
+var services = new ServiceCollection();
 
 //Wallets are stored in their own repository and reference the player via PlayerId
 IWalletRepository walletRepository = new InMemoryWalletRepository();
