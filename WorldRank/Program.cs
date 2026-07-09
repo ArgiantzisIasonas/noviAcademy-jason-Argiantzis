@@ -120,16 +120,7 @@ void FindPlayerById()
     Console.WriteLine(player);
 }
 
-void SearchPlayer()
-{
-    Console.Write("Give player id: ");
-    var id = Console.ReadLine();
-    int.TryParse(id, out var playerId);
-    {
-        walletRepository.AddWallet(new Wallet(10, Currency.EUR, false), playerId);
-    }
-    Console.Write("Id not a number");
-}
+
 
 void GroupPlayersByScore()
 {
