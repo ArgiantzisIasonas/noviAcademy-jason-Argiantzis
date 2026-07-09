@@ -13,7 +13,7 @@ namespace Domain.Entity
 		public Wallet(int playerId, Currency currency, decimal balance, bool isBlocked = false)
 		{
 			PlayerId = playerId;
-			if (balance < 0)
+			if (balance < 0  )
 				throw new InsufficientFundsException(balance);
 
 			Balance = balance;
@@ -59,6 +59,18 @@ namespace Domain.Entity
 			Balance = newBalance;
 		}
 
-		public override string ToString() => $"Balance -> {Balance} Currency -> {Currency} IsBlocked -> {IsBlocked}";
+        public void ForceWithdraw(decimal amount)
+        {
+            if (amount <= 0)
+                throw new InvalidAmountException(amount);
+
+            if (IsBlocked)
+                throw new WalletBlockedException(Currency);
+
+            var newBalance = Balance - amount;
+            Balance = newBalance;
+        }
+
+        public override string ToString() => $"Balance -> {Balance} Currency -> {Currency} IsBlocked -> {IsBlocked}";
 	}
 }
