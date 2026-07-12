@@ -15,7 +15,7 @@ namespace WorldRank.Infrastructure
 
 		private readonly List<Wallet> _wallets = new List<Wallet>();
 
-		public InMemoryPlayerRepository(ILogger<InMemoryWalletRepository> logger>)
+		public InMemoryWalletRepository(ILogger<InMemoryWalletRepository> logger)
 		{
 			_logger= logger;
 		}

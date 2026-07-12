@@ -5,6 +5,6 @@ namespace WorldRank.Infrastructure.Persistencies.Context
 {
     public partial class WorldRankDbContext : DbContext
     {
-        public 
+        //public 
     }
 }
