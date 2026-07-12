@@ -1,4 +1,5 @@
-using Domain.Enums;
+using WorldRank.Domain.Enums;
+using WorldRank.Domain.Exceptions;
 
 namespace Domain.Exceptions
 {

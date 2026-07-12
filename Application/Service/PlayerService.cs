@@ -1,7 +1,8 @@
 ﻿using Application.Repositories;
-using Domain.Entity;
+using WorldRank.Application.Service;
+using WorldRank.Domain.Entity;
 
-namespace Application.Service;
+namespace WorldRank.Application.Service;
 
 public class PlayerService
 {

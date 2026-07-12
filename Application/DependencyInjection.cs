@@ -1,4 +1,4 @@
-﻿using Application.Service;
+﻿using WorldRank.Application.Service;
 using Application.Strategies;
 using Microsoft.Extensions.DependencyInjection;
 

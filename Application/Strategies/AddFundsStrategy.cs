@@ -1,5 +1,5 @@
-﻿using Domain.Entity;
-using Domain.Enums;
+﻿using WorldRank.Domain.Entity;
+using WorldRank.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;

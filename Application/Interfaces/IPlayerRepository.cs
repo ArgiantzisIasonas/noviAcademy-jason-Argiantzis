@@ -1,4 +1,4 @@
-﻿using Domain.Entity;
+﻿using WorldRank.Domain.Entity;
 
 namespace Application.Repositories
 {

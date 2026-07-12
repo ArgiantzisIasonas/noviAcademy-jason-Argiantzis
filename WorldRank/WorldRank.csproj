@@ -12,9 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Application\Application.csproj" />
-    <ProjectReference Include="..\Domain\Domain.csproj" />
-    <ProjectReference Include="..\Infrastraction\Infrastructure.csproj" />
+    <ProjectReference Include="..\Application\WorldRank.Application.csproj" />
+    <ProjectReference Include="..\Domain\WorldRank.Domain.csproj" />
+    <ProjectReference Include="..\Infrastraction\WorldRank.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

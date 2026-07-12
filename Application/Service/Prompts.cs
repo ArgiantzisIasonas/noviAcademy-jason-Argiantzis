@@ -1,6 +1,6 @@
-﻿using Domain.Enums;
+﻿using WorldRank.Domain.Enums;
 
-namespace Application.Service
+namespace WorldRank.Application.Service
 {
     public static class Prompts
     {

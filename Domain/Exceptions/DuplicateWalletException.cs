@@ -1,6 +1,6 @@
-using Domain.Enums;
+using WorldRank.Domain.Enums;
 
-namespace Domain.Exceptions
+namespace WorldRank.Domain.Exceptions
 {
 	public class DuplicateWalletException : WalletException
 	{

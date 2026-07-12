@@ -1,8 +1,9 @@
 ﻿using Application.Repositories;
 using Microsoft.Extensions.DependencyInjection;
+using WorldRank.Application.Interfaces;
 
 
-namespace Infrastructure
+namespace WorldRank.Infrastructure
 {
     public static class DependencyInjection
     {

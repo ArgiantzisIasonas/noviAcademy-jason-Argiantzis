@@ -1,10 +1,12 @@
 ﻿using Application.Repositories;
 using Application.Strategies;
-using Domain.Entity;
-using Domain.Enums;
-using Domain.Exceptions;
+using WorldRank.Domain.Entity;
+using WorldRank.Domain.Enums;
+using Microsoft.Extensions.Logging;
+using WorldRank.Application.Interfaces;
+using WorldRank.Domain.Exceptions;
 
-namespace Application.Service
+namespace WorldRank.Application.Service
 {
     public class WalletService
     {

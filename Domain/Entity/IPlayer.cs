@@ -1,6 +1,6 @@
-namespace Domain.Entity
+namespace WorldRank.Domain.Entity
 {
-	public interface IPlayer
+    public interface IPlayer
 	{
 		int Id { get; }
 		string Name { get; }

@@ -1,10 +1,11 @@
 using Application.Repositories;
-using Domain.Entity;
-using Domain.Enums;
-using Domain.Exceptions;
-using Infrastructure;
+using WorldRank.Domain.Entity;
+using WorldRank.Domain.Enums;
+using WorldRank.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using NLog;
+using WorldRank.Application.Interfaces;
+using WorldRank.Domain.Exceptions;
 
 var logger = LogManager.GetCurrentClassLogger();
 var services = new ServiceCollection();

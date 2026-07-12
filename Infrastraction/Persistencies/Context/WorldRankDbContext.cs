@@ -1,8 +1,7 @@
-﻿
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Text;
 
-namespace Infrastructure.Persistencies.Context
+namespace WorldRank.Infrastructure.Persistencies.Context
 {
     public partial class WorldRankDbContext : DbContext
     {

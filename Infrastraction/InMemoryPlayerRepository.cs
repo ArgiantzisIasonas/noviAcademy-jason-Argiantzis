@@ -1,9 +1,9 @@
 using Application.Repositories;
-using Domain.Entity;
+using WorldRank.Domain.Entity;
 using NLog;
 
 
-namespace Infrastructure
+namespace WorldRank.Infrastructure
 {
 	public class InMemoryPlayerRepository : IPlayerRepository
 	{
