@@ -1,10 +1,6 @@
-using Domain.Exceptions;
-using Microsoft.Extensions.Logging;
 using WorldRank.Application.Interfaces;
 using WorldRank.Domain.Entity;
-using WorldRank.Domain.Enums;
-using WorldRank.Domain.Exceptions;
-using WorldRank.Infrastructure.Persistencies.Context;
+
 
 
 namespace WorldRank.Infrastructure

@@ -3,7 +3,7 @@ using WorldRank.Domain.Entity;
 
 namespace WorldRank.Infrastructure.Persistencies.Context
 {
-    public partial class WorldRankDbContext : DbContext
+    public  class WorldRankDbContext : DbContext
     {
         public WorldRankDbContext(DbContextOptions<WorldRankDbContext> options)
             : base(options)

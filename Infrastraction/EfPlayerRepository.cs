@@ -1,8 +1,5 @@
 ﻿using Application.Repositories;
-using System;
-using System.Collections.Generic;
 using System.Data.Entity;
-using System.Text;
 using WorldRank.Domain.Entity;
 using WorldRank.Infrastructure.Persistencies.Context;
 

@@ -9,7 +9,7 @@ namespace WorldRank.Application.Service
 {
     public interface IWalletService
     {
-        Task<Wallet> CreateWalletAsync(int playerId, Currency currency, CancellationToken= default);
+        Task<Wallet> CreateWalletAsync(int playerId, Currency currency, CancellationToken cancellationToken= default);
         Task<Wallet?> GetByIdAsync(int playerId, CancellationToken cancellationToken= default);
         Task<IReadOnlyList<Wallet>> GetByPlayerAsync(int playerId, CancellationToken cancellationToken = default);
 
