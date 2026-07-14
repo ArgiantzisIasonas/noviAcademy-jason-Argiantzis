@@ -1,6 +1,4 @@
 using WorldRank.Domain.Enums;
-using Domain.Exceptions;
-using WorldRank.Domain.Entity;
 using WorldRank.Domain.Exceptions;
 
 namespace WorldRank.Domain.Entity

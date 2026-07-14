@@ -40,8 +40,7 @@ namespace WorldRank.Infrastructure.Persistencies.Context
             modelBuilder.Entity<Wallet>(entity =>
             {
                 entity.ToTable("wallet");
-
-                entity.HasKey(w => w.PlayerId);
+                entity.HasKey(w => w.Id);
 
                 entity.Property(w => w.PlayerId)
                     .HasColumnName("PlayerId");
