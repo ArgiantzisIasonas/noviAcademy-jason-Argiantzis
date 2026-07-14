@@ -8,22 +8,24 @@ namespace WorldRank.Domain.Entity
 	public class Wallet : IWallet
 	{
 		public Currency Currency { get; }
+		public int Id { get; }
 		public int PlayerId { get; }
 		public decimal Balance { get; private set; }
 		public bool IsBlocked { get; private set; }
+        private static readonly Random Random = new();
 
-		public Wallet(int playerId, Currency currency, decimal balance, bool isBlocked = false)
+        public Wallet(int playerId, Currency currency, bool isBlocked = false)
 		{
-			PlayerId = playerId;
-			if (balance < 0  )
-				throw new InsufficientFundsException(balance);
-
-			Balance = balance;
+			Id= GenerateRandomInt(1, 9999);
+            PlayerId = playerId;
 			Currency = currency;
 			IsBlocked = isBlocked;
 		}
-
-		public void Block() => IsBlocked = true;
+        public static int GenerateRandomInt(int min, int max)
+        {
+            return Random.Next(min, max + 1);
+        }
+        public void Block() => IsBlocked = true;
 
 		public void Unblock() => IsBlocked = false;
 

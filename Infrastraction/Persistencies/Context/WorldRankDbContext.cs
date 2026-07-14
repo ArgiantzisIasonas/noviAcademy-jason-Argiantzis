@@ -52,7 +52,7 @@ namespace WorldRank.Infrastructure.Persistencies.Context
 
                 entity.Property(w => w.Currency)
                     .HasColumnName("Currency")
-                    .HasConversion<int>();
+                    .HasConversion<string>().HasMaxLength(3);
 
                 entity.Property(w => w.IsBlocked)
                     .HasColumnName("IsBlocked");

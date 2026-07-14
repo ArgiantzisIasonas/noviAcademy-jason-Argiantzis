@@ -4,14 +4,15 @@ namespace Application.Repositories
 {
 	public interface IPlayerRepository
 	{
-		void AddPlayer(Player player);
+		Task AddAsync(Player player, CancellationToken cancellationToken=default);
 
-		IEnumerable<Player> GetAllPlayers();
+		Task<IReadOnlyList<Player>> GetAllAsync(CancellationToken cancellationToken=default);
 
-		void DeletePlayer(int playerId);
+		//void DeletePlayer(int playerId);
 
-		Player? FindPlayer(int playerId);
+		Task<Player?> GetByIdAsync(int playerId,CancellationToken cancellationToken= default);
+        Task<Player?> GetByNameAsync(String name, CancellationToken cancellationToken = default);
 
-		IEnumerable<IGrouping<int, Player>> GroupPlayersByScore();
-	}
+        //IEnumerable<IGrouping<int, Player>> GroupPlayersByScore();
+    }
 }
