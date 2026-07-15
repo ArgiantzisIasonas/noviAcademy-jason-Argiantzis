@@ -1,227 +1,120 @@
-﻿using Application.Repositories;
-using Application.Strategies;
+﻿using Application.Strategies;
+using Microsoft.Extensions.Logging;
+using WorldRank.Application.Cache;
+using WorldRank.Application.Interfaces;
 using WorldRank.Domain.Entity;
 using WorldRank.Domain.Enums;
-using Microsoft.Extensions.Logging;
-using WorldRank.Application.Interfaces;
-using WorldRank.Domain.Exceptions;
 
 namespace WorldRank.Application.Service
 {
-    public class WalletService
+    public class WalletService : IWalletService
     {
-        private readonly IWalletRepository _walletRepository;
-        private readonly IPlayerRepository _playerRepository;
-        private readonly ILogger<WalletService> _logger;
-        private readonly IReadOnlyDictionary<FundsOperation, IFundsStrategy> _fundsStrategies;
+        private static readonly TimeSpan Ttl = TimeSpan.FromSeconds(60);
 
-        public WalletService(
-            IWalletRepository walletRepository,
-            IPlayerRepository playerRepository,
-            IEnumerable<IFundsStrategy> strategies,
-            ILogger<WalletService> logger)
+        private readonly IWalletRepository _walletRepository;
+        private readonly ICache _cache;
+        private readonly ILogger<WalletService> _logger;
+
+        public WalletService(IWalletRepository walletRepository, ICache cache, ILogger<WalletService> logger)
         {
             _walletRepository = walletRepository;
-            _playerRepository = playerRepository;
+            _cache = cache;
             _logger = logger;
-
-            // Index every registered strategy by the operation it implements.
-            _fundsStrategies = strategies.ToDictionary(strategy => strategy.Operation);
         }
 
-        public void AddWalletToPlayer()
+        private static string WalletKey(int id) => $"wallet:{id}";
+        private static string PlayerWalletsKey(int idPlayer) => $"wallets:player:{idPlayer}";
+        private const string AllWalletsKey = "wallets:all";
+
+
+       public async Task<Wallet> CreateWalletAsync(int playerId, Currency currency, CancellationToken cancellationToken= default)
         {
-            var playerId = Prompts.PromptPlayerId();
-            if (playerId is null)
-                return;
+            var wallet = new Wallet(playerId, currency);
+            await _walletRepository.AddAsync(wallet, cancellationToken);
+            _logger.LogInformation("Wallet created {WalletId} for player {PlayerId} in {Currency}", wallet.Id, playerId, currency);
+            Refresh(wallet);
+            return wallet;
 
-            var currency = Prompts.PromptCurrency();
-            if (currency is null)
-                return;
-
-            var balance = Prompts.PromptAmount("Initial balance");
-            if (balance is null)
-                return;
-
-            try
+        }
+       public async Task<Wallet?> GetByIdAsync(int Id, CancellationToken cancellationToken = default)
+        {
+            if(_cache.TryGet(WalletKey(Id),out Wallet? cached) && cached is not null)
             {
-                if (_playerRepository.FindPlayer(playerId.Value) is null)
-                    throw new PlayerNotFoundException(playerId.Value);
-
-                var wallet = new Wallet(playerId.Value, currency.Value, balance.Value);
-                _walletRepository.Add(wallet);
-                Console.WriteLine("Wallet added successfully.");
+                _logger.LogInformation("Cache HIT wallet {WalletId}", Id);
+                return cached;
             }
-            catch (PlayerNotFoundException ex)
+            _logger.LogInformation("Cache MISS wallet {WalletId} ", Id);
+            var wallet  = await _walletRepository.GetByIdAsync(Id, cancellationToken);
+            if(wallet is not null)
+            { _cache.Set(WalletKey(Id), wallet, Ttl); }
+            return wallet;
+        }
+        public async Task<IReadOnlyList<Wallet>> GetByPlayerAsync(int playerId, CancellationToken cancellationToken = default)
+        {
+            if (_cache.TryGet(PlayerWalletsKey(playerId), out IReadOnlyList<Wallet>? cached) && cached is not null)
             {
-                _logger.LogWarning(ex, "Could not add wallet, player {PlayerId} not found", playerId);
-                Console.WriteLine($"Error: {ex.Message}");
+                _logger.LogInformation("Cache HIT wallet {WalletId}", playerId);
+                return cached;
             }
-            catch (WalletException ex)
+            _logger.LogInformation("Cache MISS wallet {WalletId} ", playerId);
+            var wallets = await _walletRepository.GetByPlayerAsync(playerId, cancellationToken);
+  
+             _cache.Set(PlayerWalletsKey(playerId), wallets, Ttl); 
+            return wallets;
+        }
+
+        public async Task<IReadOnlyList<Wallet>> GetAllAsync(CancellationToken cancellationToken = default)
+        {
+            if (_cache.TryGet(AllWalletsKey, out IReadOnlyList<Wallet>? cached) && cached is not null)
             {
-                _logger.LogWarning(ex, "Could not add wallet for player {PlayerId} in {Currency}", playerId, currency);
-                Console.WriteLine($"Error: {ex.Message}");
+                _logger.LogInformation("Cache HIT all wallets");
+                return cached;
             }
+            _logger.LogInformation("Cache MISS wallets ");
+            var wallets = await _walletRepository.GetAllAsync(cancellationToken);
+
+            _cache.Set(AllWalletsKey, wallets, Ttl);
+            return wallets;
         }
 
-        public void GetWalletsOfPlayer()
+       public async Task ApplyFundsAsync(Wallet wallet, decimal amount, IFundsStrategy strategy, CancellationToken cancellationToken = default)
         {
-            var playerId = Prompts.PromptPlayerId();
-            if (playerId is null)
-                return;
-
-            var wallets = _walletRepository.GetAllWalletsByPlayerId(playerId.Value);
-
-            if (wallets.Count == 0)
-            {
-                Console.WriteLine("No wallets found for this player.");
-                return;
-            }
-
-            foreach (var wallet in wallets)
-                Console.WriteLine($"Wallet Number {wallets.IndexOf(wallet)} {wallet}");
+            strategy.Execute(wallet, amount);
+            await _walletRepository.SaveChangesAsync(cancellationToken);
+            _logger.LogInformation("Applied {Stratagy} , {Amount} to wallet {WalletId}; new balance {Balance}", strategy.GetType().Name
+                , amount, wallet.Id, wallet.Balance);
+            
         }
 
-        public void DepositToWallet()
+        public async Task<Wallet?> DespositAsync(int walletId, decimal amount, CancellationToken cancellationToken = default)
         {
-            var playerId = Prompts.PromptPlayerId();
-            if (playerId is null)
-                return;
+            var wallet = await _walletRepository.GetByIdAsync(walletId,cancellationToken);
 
-            var currency = Prompts.PromptCurrency();
-            if (currency is null)
-                return;
-
-            var amount = Prompts.PromptAmount("Amount to deposit");
-            if (amount is null)
-                return;
-
-            RunWalletOperation(() =>
-            {
-                _walletRepository.Deposit(playerId.Value, currency.Value, amount.Value);
-                Console.WriteLine("Deposit successful.");
-            });
+            if (wallet is null)
+                return null;
+            wallet.Deposit(amount);
+            await _walletRepository.SaveChangesAsync(cancellationToken);
+            _logger.LogInformation("Deposited {Amount} to wallet {WalletId}", amount, walletId);
+            Refresh(wallet);
+            return wallet;
         }
 
-        public void WithdrawFromWallet()
+        public async Task SetBlockedAsync(Wallet wallet, bool blocked, CancellationToken cancellationToken = default)
         {
-            var playerId = Prompts.PromptPlayerId();
-            if (playerId is null)
-                return;
-
-            var currency = Prompts.PromptCurrency();
-            if (currency is null)
-                return;
-
-            var amount = Prompts.PromptAmount("Amount to withdraw");
-            if (amount is null)
-                return;
-
-            RunWalletOperation(() =>
-            {
-                _walletRepository.Withdraw(playerId.Value, currency.Value, amount.Value);
-                Console.WriteLine("Withdrawal successful.");
-            });
+            if (blocked)
+                wallet.Block();
+            else
+                wallet.Unblock();
+            await _walletRepository.SaveChangesAsync(cancellationToken);
+            _logger.LogInformation("Wallet {WalletId} is now {State}", wallet.Id, blocked ? "blocked" : "active");
+            Refresh(wallet);
         }
-
-        public void BlockWallet()
+        private void Refresh(Wallet wallet)
         {
-            var playerId = Prompts.PromptPlayerId();
-            if (playerId is null)
-                return;
-
-            var currency = Prompts.PromptCurrency();
-            if (currency is null)
-                return;
-
-            RunWalletOperation(() =>
-            {
-                _walletRepository.Block(playerId.Value, currency.Value);
-                Console.WriteLine("Wallet blocked.");
-            });
-        }
-
-        public void UnblockWallet()
-        {
-            var playerId = Prompts.PromptPlayerId();
-            if (playerId is null)
-                return;
-
-            var currency = Prompts.PromptCurrency();
-            if (currency is null)
-                return;
-
-            RunWalletOperation(() =>
-            {
-                _walletRepository.Unblock(playerId.Value, currency.Value);
-                Console.WriteLine("Wallet unblocked.");
-            });
-        }
-
-        public void UpdateWalletBalance()
-        {
-            var playerId = Prompts.PromptPlayerId();
-            if (playerId is null)
-                return;
-
-            var currency = Prompts.PromptCurrency();
-            if (currency is null)
-                return;
-
-            var newBalance = Prompts.PromptAmount("New balance");
-            if (newBalance is null)
-                return;
-
-            RunWalletOperation(() =>
-            {
-                _walletRepository.UpdateBalance(playerId.Value, currency.Value, newBalance.Value);
-                Console.WriteLine("Balance updated.");
-            });
-        }
-
-        public void ApplyFundsStrategy()
-        {
-            var playerId = Prompts.PromptPlayerId();
-            if (playerId is null)
-                return;
-
-            var currency = Prompts.PromptCurrency();
-            if (currency is null)
-                return;
-
-            var operation = Prompts.PromptFundsOperation();
-            if (operation is null)
-                return;
-
-            var amount = Prompts.PromptAmount("Amount");
-            if (amount is null)
-                return;
-
-            // Pick the strategy that matches the chosen operation (resolved from DI, no factory).
-            var strategy = _fundsStrategies[operation.Value];
-
-            RunWalletOperation(() =>
-            {
-                var wallet = _walletRepository.GetWallet(playerId.Value, currency.Value);
-                strategy.Execute(wallet, amount.Value);
-                _logger.LogInformation("Applied {Strategy} of {Amount} to player {PlayerId} {Currency} wallet (balance {Balance})",
-                    strategy.GetType().Name, amount, playerId, currency, wallet.Balance);
-                Console.WriteLine($"{operation} operation applied.");
-            });
-        }
-
-        // Runs a wallet operation and turns any domain (WalletException) failure into a friendly message + log.
-        private void RunWalletOperation(Action operation)
-        {
-            try
-            {
-                operation();
-            }
-            catch (WalletException ex)
-            {
-                _logger.LogWarning(ex, "Wallet operation failed");
-                Console.WriteLine($"Error: {ex.Message}");
-            }
+            _cache.Set(WalletKey(wallet.Id), wallet, Ttl);
+            _cache.Remove(AllWalletsKey);
+            _cache.Remove(PlayerWalletsKey(wallet.PlayerId));
+            _logger.LogInformation("Cache write-through wallet {WalletId}; list caches invalidated", wallet.Id);
 
         }
     }

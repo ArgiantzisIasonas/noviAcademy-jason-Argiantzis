@@ -3,7 +3,7 @@ using WorldRank.Domain.Entity;
 
 namespace WorldRank.Infrastructure.Persistencies.Context
 {
-    public partial class WorldRankDbContext : DbContext
+    public  class WorldRankDbContext : DbContext
     {
         public WorldRankDbContext(DbContextOptions<WorldRankDbContext> options)
             : base(options)
@@ -40,8 +40,7 @@ namespace WorldRank.Infrastructure.Persistencies.Context
             modelBuilder.Entity<Wallet>(entity =>
             {
                 entity.ToTable("wallet");
-
-                entity.HasKey(w => w.PlayerId);
+                entity.HasKey(w => w.Id);
 
                 entity.Property(w => w.PlayerId)
                     .HasColumnName("PlayerId");
@@ -52,7 +51,7 @@ namespace WorldRank.Infrastructure.Persistencies.Context
 
                 entity.Property(w => w.Currency)
                     .HasColumnName("Currency")
-                    .HasConversion<int>();
+                    .HasConversion<string>().HasMaxLength(3);
 
                 entity.Property(w => w.IsBlocked)
                     .HasColumnName("IsBlocked");
