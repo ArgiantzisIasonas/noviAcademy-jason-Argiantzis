@@ -1,4 +1,4 @@
-﻿using System.Data.Entity;
+﻿using Microsoft.EntityFrameworkCore;
 using WorldRank.Application.Interfaces;
 using WorldRank.Domain.Entity;
 using WorldRank.Infrastructure.Persistencies.Context;

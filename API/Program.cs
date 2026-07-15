@@ -1,15 +1,27 @@
 using Application.Repositories;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using NLog.Extensions.Logging;
 using System.Text.Json.Serialization;
 using WorldRank.Application.Cache;
 using WorldRank.Application.Interfaces;
+using WorldRank.Application.Modules;
 using WorldRank.Application.Service;
 using WorldRank.Infrastructure;
 using WorldRank.Infrastructure.Caching;
+using WorldRank.Infrastructure.Modules;
 using WorldRank.Infrastructure.Persistencies.Context;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+
+builder.Host.ConfigureContainer<ContainerBuilder>(container =>
+{
+    container.RegisterModule(new ApplicationModule());
+    container.RegisterModule(new InfrastructureModule());
+});
 
 builder.Logging.ClearProviders();
 builder.Logging.AddNLog("nlog.config");
