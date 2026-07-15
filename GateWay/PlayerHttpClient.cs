@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace GateWay
+﻿namespace GateWay
 {
     public class PlayerHttpClient : IPlayersHttpClient
     {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace WorldRank.Application.Cache
+﻿namespace WorldRank.Application.Cache
 {
     public interface ICache
     {

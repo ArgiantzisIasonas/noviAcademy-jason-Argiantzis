@@ -1,7 +1,6 @@
 ﻿using Application.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using WorldRank.Application.Interfaces;
-using WorldRank.Infrastructure.Persistencies.Context;
 
 
 namespace WorldRank.Infrastructure

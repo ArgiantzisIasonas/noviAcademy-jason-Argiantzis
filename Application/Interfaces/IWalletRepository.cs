@@ -1,5 +1,5 @@
 using WorldRank.Domain.Entity;
-using WorldRank.Domain.Enums;
+
 
 namespace WorldRank.Application.Interfaces
 {

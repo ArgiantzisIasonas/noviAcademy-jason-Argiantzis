@@ -1,7 +1,4 @@
 ﻿using Application.Strategies;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using WorldRank.Domain.Entity;
 using WorldRank.Domain.Enums;
 
