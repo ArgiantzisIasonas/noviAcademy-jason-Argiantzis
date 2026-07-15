@@ -6,14 +6,14 @@ public class Player : IPlayer
 	public string Name { get; private set; }
 	public int Score { get; private set; }
     private static readonly Random Random = new();
-    public Player(int id, string name)
+    public Player(int id, string name , int score)
 	{
 		if (string.IsNullOrWhiteSpace(name))
 			throw new ArgumentException("Name cannot be empty.", nameof(name));
 
 		Id = id;
 		Name = name;
-		Score = 0;
+		Score = score;
 	}
 
     public Player(string name)
@@ -24,6 +24,14 @@ public class Player : IPlayer
         Id = GenerateRandomInt(1, 9999);
         Name = name;
 
+    }
+
+	public static Player CreateNew(String name)
+	{
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Name cannot be empty.", nameof(name));
+
+        return new Player(GenerateRandomInt(1, 9999), name,0);
     }
 
     public static int GenerateRandomInt(int min, int max)
